@@ -1,0 +1,338 @@
+/* screens/inventario/DetalleModals.css */
+
+.inv-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.52);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.inv-modal-sheet {
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  overflow-y: auto;
+  background-color: var(--c-surface, #FFFFFF);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 20px;
+  padding-bottom: 36px;
+  box-sizing: border-box;
+}
+
+.inv-modal-sheet-tall {
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.inv-modal-handle {
+  width: 36px;
+  height: 4px;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+  margin: 0 auto 16px auto;
+}
+
+.inv-modal-row-between {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.inv-modal-row {
+  display: flex;
+  align-items: center;
+}
+
+.inv-modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--c-textPrimary, #1A1916);
+  margin: 0;
+}
+
+.inv-modal-provtipo {
+  font-size: 12px;
+  color: var(--c-textSecondary, #7A7670);
+  margin: 2px 0 0 0;
+}
+
+.inv-modal-close {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--c-textSecondary, #7A7670);
+  display: flex;
+  flex-shrink: 0;
+}
+
+/* Stats row */
+.inv-modal-stats-row {
+  display: flex;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.inv-modal-statbox {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background-color: var(--c-surface2, #F8F9FA);
+  border: 0.5px solid var(--c-border, #E2E6EA);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+}
+
+.inv-modal-statlabel {
+  font-size: 10px;
+  color: var(--c-textSecondary, #7A7670);
+  font-weight: 600;
+}
+
+.inv-modal-statvalue {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-textPrimary, #1A1916);
+}
+
+.inv-modal-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--c-textSecondary, #7A7670);
+  letter-spacing: 0.5px;
+}
+
+/* Barra grande */
+.inv-modal-bigbar-bg {
+  height: 10px;
+  background-color: rgba(0, 0, 0, 0.08);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.inv-modal-bigbar-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.2s ease;
+}
+
+.inv-modal-barlabel {
+  font-size: 10px;
+  color: var(--c-textSecondary, #7A7670);
+}
+
+/* Info / warning boxes */
+.inv-modal-infobox {
+  background-color: var(--c-surface2, #F8F9FA);
+  border: 0.5px solid var(--c-border, #E2E6EA);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.inv-modal-infotitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-textPrimary, #1A1916);
+  margin: 0 0 4px 0;
+}
+
+.inv-modal-infotext {
+  font-size: 13px;
+  color: var(--c-textSecondary, #7A7670);
+  line-height: 18px;
+  margin: 0;
+}
+
+.inv-modal-warningbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 13px;
+  border: 0.5px solid #FAC775;
+  background-color: #FAEEDA;
+  color: #633806;
+}
+
+/* Scroll interno (para modales altos) */
+.inv-modal-scroll {
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Tabla de info (proveedor) */
+.inv-modal-infotable {
+  margin: 18px 0 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inv-modal-inforow {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.inv-modal-infokey {
+  color: var(--c-textSecondary, #7A7670);
+}
+
+.inv-modal-infoval {
+  color: var(--c-textPrimary, #1A1916);
+  font-weight: 500;
+  text-align: right;
+}
+
+/* Recomendación de compra */
+.inv-modal-recom-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--c-surface2, #F8F9FA);
+  border: 0.5px solid var(--c-border, #E2E6EA);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--c-textSecondary, #7A7670);
+}
+
+.inv-modal-recom-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.inv-modal-recom-card {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border: 0.5px solid var(--c-border, #E2E6EA);
+  border-left-width: 3px;
+  border-left-style: solid;
+  border-radius: 0 10px 10px 0;
+  padding: 10px;
+  background-color: var(--c-surface, #FFFFFF);
+}
+
+.inv-modal-recom-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.inv-modal-recom-nombre {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-textPrimary, #1A1916);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inv-modal-recom-meta {
+  font-size: 12px;
+  color: var(--c-textSecondary, #7A7670);
+}
+
+.inv-modal-recom-sugerido {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Formulario nuevo proveedor */
+.inv-modal-hint-inline {
+  font-size: 11px;
+  color: var(--c-textSecondary, #7A7670);
+}
+
+.inv-modal-formgroup {
+  margin-bottom: 16px;
+}
+
+.inv-modal-formlabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-textPrimary, #1A1916);
+  margin-bottom: 6px;
+}
+
+.inv-modal-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--c-border, #E2E6EA);
+  background-color: var(--c-surface2, #FAFBFC);
+  color: var(--c-textPrimary, #1A1916);
+  border-radius: 10px;
+  padding: 11px 12px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.inv-modal-input:focus {
+  outline: none;
+  border-color: var(--c-accentText, #185FA5);
+}
+
+.inv-modal-errortext {
+  color: #E24B4A;
+  font-size: 11px;
+  margin: 4px 0 0 0;
+}
+
+.inv-modal-dia-toggle {
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--c-border, #E2E6EA);
+  background: transparent;
+  color: var(--c-textSecondary, #7A7670);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.inv-modal-dia-toggle-active {
+  background-color: var(--c-btnBg, #1A1916);
+  border-color: var(--c-btnBg, #1A1916);
+  color: var(--c-btnText, #F4F2EE);
+  font-weight: 600;
+}
+
+.inv-modal-btn {
+  flex: 1;
+  padding: 13px;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.inv-modal-btn-secondary {
+  background-color: var(--c-surface2, #F8F9FA);
+  color: var(--c-textPrimary, #1A1916);
+  border: 1px solid var(--c-border, #E2E6EA);
+}
+
+.inv-modal-btn-primary {
+  background-color: var(--c-btnBg, #1A1916);
+  color: var(--c-btnText, #F4F2EE);
+}

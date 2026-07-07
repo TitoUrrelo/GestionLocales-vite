@@ -1,0 +1,233 @@
+/* screens/inventario/FloatingSheet.css */
+
+.inv-blur-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.inv-fl-sheet {
+  background-color: var(--c-surface, #FFFFFF);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+.inv-fl-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 0.5px solid var(--c-border, #E2E6EA);
+  flex-shrink: 0;
+}
+
+.inv-fl-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--c-textPrimary, #1A1916);
+  margin: 0;
+}
+
+.inv-fl-close {
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--c-textSecondary, #7A7670);
+  display: flex;
+}
+
+.inv-fl-body {
+  padding: 18px;
+  overflow-y: auto;
+}
+
+.inv-fl-muted-label {
+  font-size: 12px;
+  color: var(--c-textSecondary, #7A7670);
+  margin: 0 0 12px 0;
+}
+
+.inv-fl-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--c-textSecondary, #7A7670);
+  letter-spacing: 0.5px;
+  margin: 0 0 8px 0;
+}
+
+.inv-fl-empty {
+  color: var(--c-textSecondary, #7A7670);
+  font-size: 13px;
+  text-align: center;
+  padding: 20px 0;
+}
+
+/* Reporte */
+.inv-rep-pills {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.inv-rep-pill {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: transparent;
+  color: var(--c-textSecondary, #7A7670);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.inv-rep-pill-active {
+  background-color: var(--c-btnBg, #1A1916);
+  border-color: var(--c-btnBg, #1A1916);
+  color: var(--c-btnText, #F4F2EE);
+}
+
+.inv-rep-infobox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border: 0.5px solid var(--c-border, #E2E6EA);
+  border-radius: 10px;
+  padding: 12px;
+  background-color: var(--c-surface2, #F8F9FA);
+  color: var(--c-textSecondary, #7A7670);
+  font-size: 12px;
+}
+
+.inv-rep-genbtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  border: none;
+  background-color: var(--c-btnBg, #1A1916);
+  color: var(--c-btnText, #F4F2EE);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+  font-family: inherit;
+}
+
+/* Visitan hoy */
+.inv-vhf-sheet {
+  background-color: var(--c-surface, #FFFFFF);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+.inv-vhf-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 0.5px solid var(--c-border, #E2E6EA);
+  color: var(--c-accentText, #185FA5);
+  flex-shrink: 0;
+}
+
+.inv-vhf-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--c-textPrimary, #1A1916);
+  margin: 0;
+}
+
+.inv-vhf-list {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inv-vhf-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 0.5px solid var(--c-border, #E2E6EA);
+  background-color: var(--c-surface2, #F8F9FA);
+}
+
+.inv-vhf-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 21px;
+  background-color: #E6F1FB;
+  color: #0C447C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.inv-vhf-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.inv-vhf-nombre {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-textPrimary, #1A1916);
+  margin: 0;
+}
+
+.inv-vhf-empresa {
+  font-size: 12px;
+  color: var(--c-textSecondary, #7A7670);
+  margin: 2px 0 0 0;
+}
+
+.inv-vhf-footer {
+  display: flex;
+  gap: 10px;
+  padding: 14px;
+  border-top: 0.5px solid var(--c-border, #E2E6EA);
+  flex-shrink: 0;
+}
+
+.inv-vhf-btn {
+  flex: 1;
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  border: 1px solid transparent;
+}
+
+.inv-vhf-btn-secondary {
+  border-color: var(--c-border, #E2E6EA);
+  background: transparent;
+  color: var(--c-textSecondary, #7A7670);
+}
+
+.inv-vhf-btn-primary {
+  background-color: var(--c-btnBg, #1A1916);
+  color: var(--c-btnText, #F4F2EE);
+}

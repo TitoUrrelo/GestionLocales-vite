@@ -1,0 +1,61 @@
+.swb-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid transparent;
+}
+
+.swb-normal {
+  background-color: #FAEEDA;
+  border-bottom-color: #F0D9B5;
+  color: #633806;
+}
+
+.swb-urgente {
+  background-color: #FCEBEB;
+  border-bottom-color: #F7C1C1;
+  color: #791F1F;
+}
+
+.swb-icon {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.swb-textwrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.swb-titulo {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  margin: 0;
+  color: inherit;
+}
+
+.swb-mensaje {
+  font-size: 11px;
+  margin: 1px 0 0 0;
+  line-height: 15px;
+  color: inherit;
+}
+
+.swb-btn {
+  padding: 6px 10px;
+  border-radius: 7px;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+
+.swb-btn:hover {
+  opacity: 0.8;
+}

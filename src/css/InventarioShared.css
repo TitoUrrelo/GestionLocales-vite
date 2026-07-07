@@ -1,0 +1,115 @@
+/* screens/inventario/InventarioShared.css
+   Estos componentes esperan que un ancestro (el layout Desktop/Mobile,
+   Parte 2) defina las variables de tema --c-bg, --c-surface, --c-border,
+   --c-textPrimary, --c-textSecondary, --c-btnBg, --c-btnText, etc.
+   igual que hicimos en LoginScreen. */
+
+.inv-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.inv-chip {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Barra de stock */
+.inv-bar-wrap {
+  width: 68px;
+  display: flex;
+  flex-direction: column;
+}
+
+.inv-bar-wrap-compact {
+  flex: 1;
+}
+
+.inv-bar-bg {
+  background-color: rgba(0, 0, 0, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.inv-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.2s ease;
+}
+
+.inv-bar-pct {
+  font-size: 10px;
+  color: #7F8C8D;
+  text-align: right;
+  margin-top: 2px;
+}
+
+/* Switch */
+.inv-switch-track {
+  width: 38px;
+  height: 22px;
+  border-radius: 11px;
+  border: none;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.inv-switch-off { background-color: #B0ADA8; justify-content: flex-start; }
+.inv-switch-on  { background-color: #185FA5; justify-content: flex-end; }
+
+.inv-switch-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background-color: #FFFFFF;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  display: block;
+}
+
+/* Modo toggle (Ventas / Inventario) */
+.inv-modo-wrap {
+  display: flex;
+  border-radius: 9px;
+  border: 1px solid var(--c-border, #E2E6EA);
+  background-color: var(--c-surface2, #F8F9FA);
+  padding: 3px;
+  margin: 0 12px 10px 12px;
+  gap: 2px;
+}
+
+.inv-modo-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 0;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--c-textSecondary, #7F8C8D);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.inv-modo-btn-active {
+  background-color: var(--c-btnBg, #1A1916);
+  color: var(--c-btnText, #F4F2EE);
+}
+
+.inv-modo-label {
+  font-size: 12px;
+  font-weight: 600;
+}

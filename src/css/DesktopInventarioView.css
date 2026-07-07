@@ -1,0 +1,229 @@
+/* screens/inventario/DesktopInventarioView.css */
+
+.div-scroll {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Fila de KPIs */
+.div-kpi-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px;
+  border-bottom: 0.5px solid var(--c-border, #E2E6EA);
+}
+
+.div-kpi-card {
+  flex: 1;
+  min-width: 160px;
+  border: 0.5px solid var(--c-border, #E2E6EA);
+  border-radius: 12px;
+  padding: 12px;
+  background-color: var(--c-surface, #FFFFFF);
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+.div-kpi-agenda {
+  min-width: 220px;
+  cursor: default;
+}
+
+.div-section-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--c-textSecondary, #7A7670);
+}
+
+.div-metric-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.div-metric-card {
+  min-width: 30%;
+  flex: 1;
+  border: 0.5px solid var(--c-border, #E2E6EA);
+  border-radius: 8px;
+  padding: 9px;
+  background-color: var(--c-bg, #FFFFFF);
+  display: flex;
+  flex-direction: column;
+}
+
+.div-metric-label {
+  font-size: 9px;
+  color: var(--c-textSecondary, #7A7670);
+}
+
+.div-metric-value {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 22px;
+  margin-top: 2px;
+}
+
+.div-kpi-tap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 0.5px solid var(--c-border, #E2E6EA);
+  color: var(--c-textSecondary, #7A7670);
+  font-size: 10px;
+}
+
+.div-kpi-agenda-hint {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--c-textSecondary, #7A7670);
+}
+
+/* Contenido en 3 columnas */
+.div-content-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px;
+  align-items: flex-start;
+}
+
+.div-col3 {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.div-card {
+  border: 0.5px solid var(--c-border, #E2E6EA);
+  border-radius: 12px;
+  padding: 12px;
+  background-color: var(--c-surface, #FFFFFF);
+}
+
+.div-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.div-empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: 0.5px solid var(--c-border, #E2E6EA);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  color: var(--c-textSecondary, #7A7670);
+  font-size: 12px;
+}
+
+.div-list-gap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Filas de las listas KPI flotantes */
+.div-kpi-item-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 0.5px solid var(--c-border, #E2E6EA);
+  color: var(--c-textSecondary, #7A7670);
+}
+
+.div-kpi-item-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--c-textPrimary, #1A1916);
+}
+
+.div-kpi-item-btn {
+  padding: 5px 10px;
+  border-radius: 7px;
+  border: none;
+  background-color: var(--c-btnBg, #1A1916);
+  color: var(--c-btnText, #F4F2EE);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.div-kpi-prov-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 0.5px solid var(--c-border, #E2E6EA);
+  width: 100%;
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.div-kpi-prov-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  background-color: #E6F1FB;
+  color: #0C447C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.div-kpi-prov-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.div-kpi-prov-nombre {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-textPrimary, #1A1916);
+}
+
+.div-kpi-prov-empresa {
+  font-size: 11px;
+  color: var(--c-textSecondary, #7A7670);
+}
+
+.div-kpi-prov-hint {
+  font-size: 10px;
+  color: var(--c-textPrimary, #1A1916);
+}
+
+.div-agenda-empty {
+  color: var(--c-textSecondary, #7A7670);
+  text-align: center;
+  font-size: 13px;
+}
