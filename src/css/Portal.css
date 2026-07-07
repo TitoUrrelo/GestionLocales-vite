@@ -1,0 +1,266 @@
+/* ==========================
+   PORTAL
+========================== */
+
+.portal-page {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.portal-shell,
+.modal-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.12);
+}
+
+.portal-shell {
+  width: min(100%, 880px);
+  padding: 30px;
+}
+
+.portal-header,
+.modal-head,
+.modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  color: #0f766e;
+  font-weight: 800;
+}
+
+.muted {
+  color: #64748b;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================
+   BOTONES
+========================== */
+
+.btn,
+.module-card,
+.icon-btn {
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  transition: transform .18s, box-shadow .18s, background .18s;
+}
+
+.btn:hover,
+.module-card:hover,
+.icon-btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn {
+  min-height: 44px;
+  padding: 11px 16px;
+  font-weight: 800;
+}
+
+.btn-primary {
+  color: white;
+  background: #0f766e;
+  box-shadow: 0 12px 26px rgba(15,118,110,.24);
+}
+
+.btn-secondary {
+  color: #0f172a;
+  background: #e2e8f0;
+}
+
+.btn-danger {
+  color: white;
+  background: #dc2626;
+}
+
+/* ==========================
+   TARJETAS DEL PORTAL
+========================== */
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.module-card {
+  min-height: 168px;
+  padding: 20px;
+  text-align: left;
+  color: #0f172a;
+  border: 1px solid rgba(15,23,42,.08);
+}
+
+.module-card strong,
+.module-card small {
+  display: block;
+}
+
+.module-card strong {
+  margin: 18px 0 8px;
+  font-size: 20px;
+}
+
+.module-card small {
+  color: #475569;
+  line-height: 1.4;
+}
+
+.module-icon {
+  display: inline-grid;
+  place-items: center;
+  min-width: 58px;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.module-green {
+  background: #ecfdf5;
+}
+
+.module-green .module-icon {
+  background: #0f766e;
+}
+
+.module-blue {
+  background: #eff6ff;
+}
+
+.module-blue .module-icon {
+  background: #2563eb;
+}
+
+.module-orange {
+  background: #fff7ed;
+}
+
+.module-orange .module-icon {
+  background: #ea580c;
+}
+
+.module-purple {
+  background: #f5f3ff;
+}
+
+.module-purple .module-icon {
+  background: #7c3aed;
+}
+
+/* ==========================
+   MODAL
+========================== */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(15,23,42,.42);
+  backdrop-filter: blur(8px);
+  z-index: 20;
+}
+
+.modal-card {
+  width: min(100%,560px);
+  padding: 26px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 900;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 16px;
+  margin: 22px 0;
+  text-align: left;
+}
+
+.form-grid label {
+  font-weight: 800;
+  color: #334155;
+  font-size: 14px;
+}
+
+.field {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 46px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: white;
+  color: #0f172a;
+  font: inherit;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.field:focus {
+  border-color: #0f766e;
+  box-shadow: 0 0 0 4px rgba(15,118,110,.14);
+}
+
+.hint {
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: #64748b;
+  text-align: center;
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media (max-width: 920px) {
+  .action-grid {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+}
+
+@media (max-width: 760px) {
+
+  .portal-shell,
+  .modal-card {
+    padding: 22px;
+  }
+
+  .portal-header,
+  .modal-head,
+  .modal-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-grid,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}

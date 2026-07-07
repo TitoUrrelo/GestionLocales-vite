@@ -1,0 +1,124 @@
+/* ==========================
+   MODAL DE HORARIOS DE LOCALES
+   (usa .modal-backdrop, .modal-card, .modal-head, .modal-actions,
+   .icon-btn, .btn, .hint, .eyebrow, .form-grid, .field
+   definidos en Portal.css)
+========================== */
+
+.locales-modal {
+  width: min(100%, 460px);
+  text-align: center;
+}
+
+.locales-modal h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #0f172a;
+}
+
+/* ---- Tabs de local ---- */
+
+.locales-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 20px 0 10px;
+}
+
+.locales-tab {
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #334155;
+  border-radius: 8px;
+  padding: 10px 6px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .18s, color .18s, border-color .18s;
+}
+
+.locales-tab.activo {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: white;
+}
+
+/* ---- Tabs de tipo de turno (Día / Noche) ---- */
+
+.turno-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.turno-tab {
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  border-radius: 999px;
+  padding: 9px 6px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform .15s, background .15s, color .15s, border-color .15s;
+}
+
+.turno-tab:hover {
+  transform: translateY(-1px);
+}
+
+.turno-tab.activo {
+  background: #ea580c;
+  border-color: #ea580c;
+  color: white;
+}
+
+/* El form-grid (hora de inicio / duración) reutiliza el estilo de Portal.css,
+   pero acá lo alineamos a la izquierda ya que el modal es de texto centrado. */
+.locales-modal .form-grid {
+  text-align: left;
+}
+
+/* ---- Resumen entrada / salida ---- */
+
+.resumen-horario {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+.resumen-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 90px;
+}
+
+.resumen-item span {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  font-weight: 800;
+}
+
+.resumen-item strong {
+  font-size: 22px;
+  color: #0f172a;
+}
+
+.resumen-flecha {
+  color: #94a3b8;
+  font-size: 20px;
+}
+
+@media (max-width: 480px) {
+  .locales-tabs {
+    grid-template-columns: 1fr;
+  }
+}
