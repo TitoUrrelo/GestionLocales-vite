@@ -1,0 +1,179 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   PersonalScreen.css
+   Traducción de los StyleSheet de React Native (ps / psd / pmd) a CSS web.
+   Los colores dinámicos (theme, roles, estados) se siguen aplicando inline
+   desde el componente, igual que en la versión original de React Native.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.ps-flex { display: flex; }
+.ps-row { display: flex; flex-direction: row; align-items: center; }
+.ps-col { display: flex; flex-direction: column; }
+
+.ps-reset-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.ps-reset-btn:disabled { cursor: default; opacity: 0.6; }
+
+.ps-screen { display: flex; flex-direction: column; flex: 1; height: 100%; min-height: 0; }
+.ps-header {
+  padding: 12px 16px;
+  border-bottom: 0.5px solid;
+  display: flex; flex-direction: row; align-items: center; justify-content: space-between;
+}
+.ps-header-title { font-size: 17px; font-weight: 700; margin: 0; }
+.ps-header-sub { font-size: 12px; margin-top: 2px; }
+.ps-section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.6px; }
+
+/* KPI cards */
+.ps-kpi-card { border: 0.5px solid; border-radius: 9px; padding: 10px; min-width: 70px; }
+.ps-kpi-label { font-size: 9px; font-weight: 600; letter-spacing: 0.3px; }
+.ps-kpi-value { font-size: 20px; font-weight: 700; line-height: 24px; margin-top: 2px; }
+
+/* Empleado card */
+.ps-emp-card {
+  display: flex; flex-direction: row; align-items: center;
+  border: 0.5px solid; border-radius: 12px; padding: 13px; margin-bottom: 8px;
+  width: 100%; transition: opacity 0.15s ease;
+}
+.ps-emp-card:hover { opacity: 0.85; }
+.ps-avatar { width: 42px; height: 42px; border-radius: 21px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ps-avatar-text { font-size: 13px; font-weight: 700; }
+.ps-avatar-sm { width: 30px; height: 30px; border-radius: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ps-avatar-sm-text { font-size: 10px; font-weight: 700; }
+.ps-online-dot { width: 9px; height: 9px; border-radius: 5px; position: absolute; bottom: 0; right: 0; border: 1.5px solid #FFFFFF; }
+.ps-emp-nombre { font-size: 13px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; }
+.ps-emp-rut { font-size: 11px; margin-top: 1px; }
+
+/* Chips */
+.ps-mini-chip { padding: 2px 6px; border-radius: 5px; display: inline-flex; }
+.ps-mini-chip-text { font-size: 10px; font-weight: 500; }
+
+/* Tabla */
+.ps-table-wrap { border: 0.5px solid; border-radius: 12px; overflow: hidden; }
+.ps-table-header { display: flex; flex-direction: row; padding: 10px 14px; border-bottom: 0.5px solid; }
+.ps-table-header-text { font-size: 10px; font-weight: 700; letter-spacing: 0.3px; margin: 0; }
+.ps-table-row {
+  display: flex; flex-direction: row; align-items: center;
+  padding: 10px 14px; width: 100%; background: none; border: none; cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+.ps-table-row:hover { filter: brightness(0.98); }
+
+/* Filtros */
+.ps-search-box { display: flex; flex-direction: row; align-items: center; gap: 7px; border: 0.5px solid; border-radius: 9px; padding: 8px 10px; }
+.ps-search-input { flex: 1; font-size: 13px; border: none; outline: none; background: transparent; color: inherit; }
+.ps-filter-chip { padding: 6px 10px; border-radius: 8px; border: 0.5px solid; background: transparent; cursor: pointer; display: flex; flex-direction: row; align-items: center; gap: 4px; }
+.ps-filter-chip-text { font-size: 11px; font-weight: 500; }
+.ps-vista-btn { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; border: 0.5px solid #E2E6EA; background: transparent; cursor: pointer; }
+
+/* Modal */
+.ps-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000;
+  display: flex; align-items: flex-start; justify-content: center;
+}
+.ps-overlay-inner {
+  display: flex; flex-direction: column; flex: 1; height: 100%; overflow: hidden;
+}
+.ps-sheet-overlay {
+  position: fixed; inset: 0; z-index: 1100;
+  background: rgba(0,0,0,0.45); display: flex; align-items: flex-end; justify-content: center;
+}
+.ps-sheet {
+  border-top-left-radius: 22px; border-top-right-radius: 22px;
+  padding: 20px; padding-bottom: 36px; max-height: 92%;
+  width: 100%; max-width: 560px; overflow-y: auto; display: flex; flex-direction: column;
+}
+.ps-handle { width: 36px; height: 4px; background: #E2E6EA; border-radius: 2px; margin: 0 auto 14px; }
+.ps-modal-title { font-size: 17px; font-weight: 700; flex: 1; margin: 0; }
+.ps-close-btn { font-size: 20px; color: #7F8C8D; padding: 0 4px; background: none; border: none; cursor: pointer; }
+.ps-tab-bar { display: flex; flex-direction: row; border-bottom: 0.5px solid; }
+.ps-tab { flex: 1; padding: 10px 0; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid transparent; background: none; cursor: pointer; }
+.ps-tab-active { border-bottom-color: #2C3E50; }
+.ps-tab-text { font-size: 13px; }
+
+/* Form */
+.ps-form-group { margin-bottom: 14px; }
+.ps-form-label { font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block; }
+.ps-form-hint { font-size: 11px; margin-top: -4px; margin-bottom: 2px; }
+.ps-input {
+  border: 1px solid #E2E6EA; border-radius: 10px; padding: 11px 13px; font-size: 14px;
+  color: #2C3E50; background: #FAFBFC; width: 100%; box-sizing: border-box; outline: none;
+}
+.ps-input:focus { border-color: #2C3E50; }
+.ps-input-error { border-color: #E24B4A; }
+.ps-error-text { font-size: 12px; color: #E24B4A; margin-top: 3px; }
+.ps-toggle-btn { display: flex; flex-direction: row; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 9px; border: 1px solid; background: none; cursor: pointer; }
+.ps-toggle-btn-text { font-size: 12px; }
+
+/* Switch rows */
+.ps-switch-row { display: flex; flex-direction: row; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 0.5px solid; margin-bottom: 6px; }
+.ps-switch-label { font-size: 14px; font-weight: 600; }
+.ps-switch-sub { font-size: 12px; margin-top: 2px; }
+
+.ps-switch { position: relative; display: inline-flex; width: 44px; height: 26px; flex-shrink: 0; cursor: pointer; }
+.ps-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+.ps-switch-track {
+  position: absolute; inset: 0; border-radius: 13px; background: #E2E6EA; transition: background-color 0.15s ease;
+}
+.ps-switch-thumb {
+  position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; border-radius: 11px;
+  background: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.25); transition: transform 0.15s ease;
+}
+.ps-switch input:checked + .ps-switch-track .ps-switch-thumb { transform: translateX(18px); }
+
+/* Info boxes */
+.ps-info-box { background: #E6F1FB; border: 0.5px solid #B5D4F4; border-radius: 10px; padding: 12px; }
+.ps-info-title { font-size: 12px; font-weight: 700; color: #0C447C; margin-bottom: 4px; }
+.ps-info-text { font-size: 13px; color: #0C447C; margin: 0; }
+.ps-info-table { border: 0.5px solid #E2E6EA; border-radius: 12px; overflow: hidden; }
+.ps-info-row { display: flex; flex-direction: row; align-items: center; padding: 11px 14px; }
+.ps-info-key { font-size: 12px; color: #7F8C8D; flex: 1; }
+.ps-info-val { font-size: 12px; font-weight: 500; color: #2C3E50; }
+
+/* Empty */
+.ps-empty-box { border: 0.5px solid; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; align-items: center; }
+.ps-empty-text { font-size: 13px; text-align: center; margin: 0; }
+
+/* Buttons */
+.ps-btn { flex: 1; padding: 13px 0; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; }
+.ps-btn-primary { background: #2C3E50; }
+.ps-btn-primary-text { color: #FFFFFF; font-size: 14px; font-weight: 600; }
+.ps-btn-secondary { background: #F8F9FA; border: 1px solid #E2E6EA; }
+.ps-btn-secondary-text { color: #7F8C8D; font-size: 14px; font-weight: 500; }
+.ps-danger-btn { background: #FCEBEB; border: 0.5px solid #F7C1C1; border-radius: 10px; padding: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; width: 100%; }
+.ps-danger-btn-text { color: #791F1F; font-size: 14px; font-weight: 600; }
+
+/* Badge */
+.ps-badge { padding: 2px 7px; border-radius: 5px; display: inline-flex; align-self: flex-start; }
+.ps-badge-text { font-size: 10px; font-weight: 600; margin: 0; }
+
+/* Spinner */
+.ps-spinner {
+  display: inline-block; border-radius: 50%; border: 2px solid rgba(44,62,80,0.2);
+  border-top-color: #2C3E50; animation: ps-spin 0.7s linear infinite;
+}
+@keyframes ps-spin { to { transform: rotate(360deg); } }
+
+/* ── Desktop ── */
+.psd-screen { display: flex; flex-direction: row; flex: 1; height: 100%; min-height: 0; }
+.psd-topbar {
+  display: flex; flex-direction: row; align-items: center; justify-content: space-between;
+  padding: 12px 18px; border-bottom: 0.5px solid;
+}
+.psd-topbar-title { font-size: 15px; font-weight: 700; margin: 0; }
+.psd-topbar-sub { font-size: 11px; margin-top: 1px; }
+
+/* ── Mobile ── */
+.pmd-menu-btn { width: 34px; height: 34px; border-radius: 8px; border: 0.5px solid; display: flex; align-items: center; justify-content: center; background: none; cursor: pointer; }
+
+/* Scroll containers */
+.ps-scroll { overflow-y: auto; -ms-overflow-style: none; scrollbar-width: thin; }
+.ps-scroll::-webkit-scrollbar { width: 6px; }
+.ps-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
