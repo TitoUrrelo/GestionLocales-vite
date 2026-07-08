@@ -1,22 +1,30 @@
+// control/AuthControl.js
+
 import { signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from 'firebase/auth';
-import { ref, get, push, update, onDisconnect, query, orderByChild, equalTo } from 'firebase/database';
-import { auth, rtdb } from '../firebaseConfig';
+import { doc, getDoc, updateDoc, addDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { auth, db } from '../firebaseConfig';
 import { obtenerHorarioLocal, LOCAL_POR_DEFECTO } from './LocalControl';
 
 const NODO = 'usuarios';
+// Colección externa al empleado: cada registro identifica al usuario mediante
+// el campo `empleadoId`, en vez de anidar el historial bajo usuarios/{uid}.
 const NODO_HISTORIAL = 'historialPersonal';
 
 let _ignorarCambioAuth = false;
 export const getIgnorarCambioAuth = () => _ignorarCambioAuth;
 
-// Zona horaria fija para que la hora/fecha 
+// Zona horaria fija para que la hora/fecha registrada no dependa del huso
+// horario del dispositivo/servidor donde corre el código.
 const ZONA_HORARIA = 'America/Santiago';
 
 function obtenerFechaHoraCL() {
   const ahora = new Date();
+
+  // 'en-CA' devuelve la fecha en formato YYYY-MM-DD, ya en la zona horaria
+  // indicada (evita el bug de usar toISOString(), que toma el día en UTC).
   const fecha = ahora.toLocaleDateString('en-CA', { timeZone: ZONA_HORARIA });
 
-  // formato 24hrs sin el AM/PM.
+  // hour12: false fuerza formato 24hrs y elimina el AM/PM.
   const hora = ahora.toLocaleTimeString('es-CL', {
     hour: '2-digit',
     minute: '2-digit',
@@ -27,7 +35,7 @@ function obtenerFechaHoraCL() {
   return `${fecha} ${hora}`;
 }
 
-/** Traductor de turno */
+/** Traduce 'dia' | 'noche' (el turno del empleado) a la key del nuevo modelo. */
 function tipoTurnoKey(turno) {
   return turno === 'noche' ? 'turnoNoche' : 'turnoDia';
 }
@@ -47,18 +55,22 @@ function estaDentroDelTurno(turno, horarioLocal) {
   const inicio = turnoModel.inicioEnMinutos();
   const fin = turnoModel.finEnMinutos();
 
+  // Si el turno cruza medianoche (ej. 16:00 -> 00:00), está dentro si es
+  // después de la hora de inicio O antes de la hora de fin (día siguiente).
   if (turnoModel.cruzaMedianoche()) {
     return minutosActuales >= inicio || minutosActuales < fin;
   }
   return minutosActuales >= inicio && minutosActuales < fin;
 }
 
-/** Un admin/administrador nunca tiene restricción de turno. */
+/** Un admin/administrador nunca queda sujeto a la restricción de turno. */
 function esAdministrador(datos) {
   return datos?.rol === 'admin' || datos?.rol === 'administrador';
 }
 
 /**
+ * Convierte el objeto `localAsignado` ({ cafeteria: true, almacen: false, ... })
+ * en la lista de nombres de locales que están en `true`.
  * @param {object} localAsignado
  * @returns {string[]}
  */
@@ -73,14 +85,15 @@ export async function loginEmpleado(email, password) {
   const credencial = await signInWithEmailAndPassword(auth, email, password);
   const uid = credencial.user.uid;
 
-  const snap = await get(ref(rtdb, `${NODO}/${uid}`));
+  const usuarioRef = doc(db, NODO, uid);
+  const snap = await getDoc(usuarioRef);
   if (!snap.exists()) {
     _ignorarCambioAuth = true;
     await signOut(auth);
     _ignorarCambioAuth = false;
     throw new Error('Empleado no encontrado en la base de datos.');
   }
-  const datos = snap.val();
+  const datos = snap.data();
 
   if (!datos.activo) {
     _ignorarCambioAuth = true;
@@ -112,15 +125,19 @@ export async function loginEmpleado(email, password) {
     }
   }
 
-  await push(ref(rtdb, NODO_HISTORIAL), {
+  await addDoc(collection(db, NODO_HISTORIAL), {
     empleadoId: uid,
     entrada:    obtenerFechaHoraCL(),
     salida:     null,
     turno:      datos.turno ?? 'dia',
   });
 
-  // sesion activa en Firebase
-  await update(ref(rtdb, `${NODO}/${uid}`), {
+  // ── Marcar sesión activa (presencia por heartbeat, sin onDisconnect) ──────
+  // Firestore no tiene equivalente a onDisconnect() de RTDB, así que esta
+  // marca solo se pone/quita en login/logout explícitos. La detección de
+  // "en línea" real depende de que ultimaConexion se siga refrescando cada
+  // 30s (ver actualizarPresencia) y del umbral en estaRealmenteEnLinea().
+  await updateDoc(usuarioRef, {
     sesionActiva:   true,
     ultimaConexion: new Date().toISOString(),
   });
@@ -132,43 +149,42 @@ export async function logoutEmpleado() {
   const uid = auth.currentUser?.uid;
 
   if (uid) {
-    // Registrar salida en historial
-    const qHistorial = query(
-      ref(rtdb, NODO_HISTORIAL),
-      orderByChild('empleadoId'),
-      equalTo(uid),
-    );
-    const histSnap = await get(qHistorial);
-    if (histSnap.exists()) {
-      let keyPendiente = null;
-      histSnap.forEach(child => {
-        const val = child.val();
-        if (!val.salida) keyPendiente = child.key;
+    // Registrar salida en historial (colección externa, filtrada por empleadoId)
+    const qHistorial = query(collection(db, NODO_HISTORIAL), where('empleadoId', '==', uid));
+    const histSnap = await getDocs(qHistorial);
+    let keyPendiente = null;
+    histSnap.forEach(docSnap => {
+      const val = docSnap.data();
+      if (!val.salida) keyPendiente = docSnap.id;
+    });
+    if (keyPendiente) {
+      await updateDoc(doc(db, NODO_HISTORIAL, keyPendiente), {
+        salida: obtenerFechaHoraCL(),
       });
-      if (keyPendiente) {
-        await update(ref(rtdb, `${NODO_HISTORIAL}/${keyPendiente}`), {
-          salida: obtenerFechaHoraCL(),
-        });
-      }
     }
 
-    // cancelar el onDisconnect pendiente y marcar sesión inactiva
-    await onDisconnect(ref(rtdb, `${NODO}/${uid}/sesionActiva`)).cancel();
-    await onDisconnect(ref(rtdb, `${NODO}/${uid}/ultimaConexion`)).cancel();
-
-    await update(ref(rtdb, `${NODO}/${uid}`), {
-      sesionActiva:  false,
+    // Sin onDisconnect: el logout manual es el único lugar donde se apaga
+    // sesionActiva de forma inmediata. Si el cliente crashea sin pasar por
+    // acá, sesionActiva queda en true pero ultimaConexion deja de avanzar,
+    // así que estaRealmenteEnLinea() igual lo mostrará como desconectado
+    // después del umbral de 90s.
+    await updateDoc(doc(db, NODO, uid), {
+      sesionActiva: false,
     });
   }
 
   await signOut(auth);
 }
 
+/**
+ * Actualiza ultimaConexion del empleado autenticado.
+ * Llamar al navegar entre pantallas y periódicamente desde AuthContext.
+ */
 export async function actualizarPresencia() {
   const uid = auth.currentUser?.uid;
   if (!uid) return;
   try {
-    await update(ref(rtdb, `${NODO}/${uid}`), {
+    await updateDoc(doc(db, NODO, uid), {
       ultimaConexion: new Date().toISOString(),
     });
   } catch (_) {

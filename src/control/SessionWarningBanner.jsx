@@ -1,3 +1,17 @@
+// control/SessionWarningBanner.jsx
+// Banner que aparece en cualquier pantalla cuando faltan ≤15 min de turno.
+// Maneja su propio contador interno — no depende de minutosParaCierre en el contexto.
+//
+// Uso:
+//   import SessionWarningBanner from '../control/SessionWarningBanner';
+//   ...
+//   return (
+//     <div style={{ flex: 1 }}>
+//       <SessionWarningBanner />
+//       {/* resto de la pantalla */}
+//     </div>
+//   );
+
 import { useEffect, useState } from 'react';
 import { FiAlertCircle, FiClock } from 'react-icons/fi';
 import { useAuth, minutosHastaFinTurno } from './AuthContext';
@@ -5,7 +19,7 @@ import { cerrarSesion } from './loginControl';
 
 import '../css/SessionWarningBanner.css';
 
-const UMBRAL = 15; // minutos antes del fin de turno
+const UMBRAL = 15; // minutos antes del fin de turno en que aparece el banner
 
 export default function SessionWarningBanner() {
   const { usuario } = useAuth();
@@ -29,7 +43,7 @@ export default function SessionWarningBanner() {
 
   const visible = mins !== null && mins <= UMBRAL && mins > 0;
 
-  // mostrar hasta que falten 15 min o menos
+  // No renderizar nada hasta que falten 15 min o menos
   if (!visible) return null;
 
   const esUrgente = mins !== null && mins <= 5;

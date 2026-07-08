@@ -100,7 +100,8 @@ function obtenerRangoTurno(horariosLocales, localAsignado, turno) {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function getInitials(nombre) {
-  return nombre.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  if (!nombre || typeof nombre !== 'string') return '?';
+  return nombre.trim().split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
 }
 
 function formatFecha(iso) {
@@ -835,8 +836,8 @@ function ModalEmpleado({ empleado, visible, onClose, onGuardar, onDesactivar, es
 
 // ─── Tarjeta de empleado (card view) ─────────────────────────────────────────
 function EmpleadoCard({ emp, onPress, colors, horariosLocales }) {
-  const rol    = ROLES[emp.rol];
-  const turno  = emp.turno ? TURNOS[emp.turno] : null; // administrador no tiene turno
+  const rol    = ROLES[emp.rol] ?? { bg: '#F0F3F4', text: '#7F8C8D', label: emp.rol ?? '—' };
+  const turno  = emp.turno ? (TURNOS[emp.turno] ?? { label: emp.turno }) : null; // administrador no tiene turno
   const rangoTurno = obtenerRangoTurno(horariosLocales, emp.localAsignado, emp.turno);
   const enLinea = !!emp.sesionActiva;
   const locales  = localesDeEmpleado(emp);

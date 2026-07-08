@@ -16,7 +16,7 @@
 // / CollectionReference de Firestore, ya resueltas contra `db`.
 
 import { doc, collection } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../firebaseConfig';
 
 const NODO_LOCALES = 'locales';
 

@@ -2,8 +2,8 @@
 // Capa entre LoginScreen y AuthControl — traduce errores y valida inputs.
 
 import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
-import { ref, query, orderByChild, equalTo, get } from 'firebase/database';
-import { auth, rtdb } from '../firebaseConfig';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { auth, db } from '../firebaseConfig';
 import { loginEmpleado, logoutEmpleado } from './AuthControl';
 import { EmpleadoModel } from '../models/EmpleadoModel';
 
@@ -29,6 +29,10 @@ export async function loginUsuario(email, password) {
 }
 
 /**
+ * Inicia sesión con una cuenta de Google, pero SOLO si ese correo
+ * ya corresponde a un empleado/usuario existente en la base de datos.
+ * Si no existe, cierra la sesión recién creada y lanza un error.
+ * AuthContext detecta la sesión válida automáticamente vía onAuthStateChanged.
  * @returns {Promise<import('firebase/auth').User>}
  */
 export async function loginConGoogle() {
@@ -43,12 +47,9 @@ export async function loginConGoogle() {
   const email = credencial.user.email;
 
   try {
-    const existeEnPersonal = await existeUsuarioConEmail('usuarios', email);
-    const existeEnUsuarios = existeEnPersonal
-      ? true
-      : await existeUsuarioConEmail('usuarios', email);
+    const existe = await existeUsuarioConEmail('usuarios', email);
 
-    if (!existeEnPersonal && !existeEnUsuarios) {
+    if (!existe) {
       await signOut(auth);
       throw new Error('No existe una cuenta registrada con ese correo. Contacta a un administrador.');
     }
@@ -63,14 +64,15 @@ export async function loginConGoogle() {
 }
 
 /**
- * @param {string} nodo
+ * Busca si existe un documento con el email dado dentro de una colección de Firestore.
+ * @param {string} coleccion - "usuarios"
  * @param {string} email
  * @returns {Promise<boolean>}
  */
-async function existeUsuarioConEmail(nodo, email) {
-  const q = query(ref(rtdb, nodo), orderByChild('email'), equalTo(email));
-  const snap = await get(q);
-  return snap.exists();
+async function existeUsuarioConEmail(coleccion, email) {
+  const q = query(collection(db, coleccion), where('email', '==', email));
+  const snap = await getDocs(q);
+  return !snap.empty;
 }
 
 /**

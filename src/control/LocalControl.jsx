@@ -1,24 +1,35 @@
-import { ref, get, update, onValue, off } from 'firebase/database';
-import { rtdb } from '../firebaseConfig';
+// control/LocalControl.js
+// CRUD del horario fijo de cada local, separado en turnoDia y turnoNoche.
+// Estructura en Firestore (ver models/LocalModel.js para el detalle completo,
+// incluyendo proveedores / productos / recetas / ventas):
+//   locales/{nombre}          (documento)
+//     turnoDia:    { hora_inicio, hora_fin }
+//     turnoNoche:  { hora_inicio, hora_fin }
+//     proveedores/ (subcolección)
+
+import { getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import {
   LocalModel,
   LOCAL_POR_DEFECTO,
   TIPOS_TURNO,
   validarTipoTurno,
-  rutaLocal,
-  rutaTurno,
+  localDocRef,
+  localesColRef,
 } from '../models/LocalModel';
 
-const NODO = 'locales';
+// Re-exportados para no romper a quienes ya los importan desde el control.
 export { LOCAL_POR_DEFECTO, TIPOS_TURNO };
 
 /**
+ * Obtiene los horarios (turnoDia y turnoNoche) configurados para un local.
+ * Si el local no existe aún en la base de datos, retorna los valores por
+ * defecto sin lanzar error, para no bloquear la carga inicial.
  * @param {string} nombreLocal
  * @returns {Promise<LocalModel>}
  */
 export async function obtenerHorarioLocal(nombreLocal) {
-  const snap = await get(ref(rtdb, rutaLocal(nombreLocal)));
-  return LocalModel.fromFirebase(nombreLocal, snap.exists() ? snap.val() : {});
+  const snap = await getDoc(localDocRef(nombreLocal));
+  return LocalModel.fromFirebase(nombreLocal, snap.exists() ? snap.data() : {});
 }
 
 /**
@@ -31,31 +42,28 @@ export async function actualizarTurnoLocal(nombreLocal, tipoTurno, horario) {
   if (!validarTipoTurno(tipoTurno)) {
     throw new Error(`Tipo de turno inválido: ${tipoTurno}`);
   }
-  await update(ref(rtdb, rutaTurno(nombreLocal, tipoTurno)), {
-    hora_inicio: horario.hora_inicio,
-    hora_fin: horario.hora_fin,
-  });
+  // merge:true porque el documento del local puede no existir todavía y no
+  // queremos pisar el otro turno (turnoDia/turnoNoche) que ya esté guardado.
+  await setDoc(localDocRef(nombreLocal), {
+    [tipoTurno]: {
+      hora_inicio: horario.hora_inicio,
+      hora_fin: horario.hora_fin,
+    },
+  }, { merge: true });
 }
 
 /**
  * Suscribe a cambios en tiempo real de todos los locales.
- * @param {function} callback
- * @returns {function}
+ * @param {function} callback - Recibe LocalModel[]
+ * @returns {function} para cancelar la suscripción
  */
 export function suscribirLocales(callback) {
-  const localesRef = ref(rtdb, NODO);
-
-  const listener = onValue(localesRef, (snap) => {
-    if (!snap.exists()) {
+  return onSnapshot(localesColRef(), (snap) => {
+    if (snap.empty) {
       callback([]);
       return;
     }
-    const locales = [];
-    snap.forEach(child => {
-      locales.push(LocalModel.fromFirebase(child.key, child.val()));
-    });
+    const locales = snap.docs.map(docSnap => LocalModel.fromFirebase(docSnap.id, docSnap.data()));
     callback(locales);
   });
-
-  return () => off(localesRef, 'value', listener);
 }

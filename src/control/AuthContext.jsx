@@ -1,19 +1,25 @@
+// context/AuthContext.js
+
 import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { ref, onValue, off, get, onDisconnect, set } from 'firebase/database';
-import { auth, rtdb } from '../firebaseConfig';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { auth, db } from '../firebaseConfig';
 import { logoutEmpleado, actualizarPresencia } from './AuthControl';
 import { obtenerHorarioLocal, LOCAL_POR_DEFECTO } from '../control/LocalControl'; // TODO: ajustar la ruta según donde guardes LocalControl.jsx
 
 const AuthContext = createContext(null);
 
-// traducir turno 
+const NODO = 'usuarios';
+
+// ─── Helpers de turno ─────────────────────────────────────────────────────────
+
+/** Traduce 'dia' | 'noche' (el turno del empleado) a la key del nuevo modelo. */
 function tipoTurnoKey(turno) {
   return turno === 'noche' ? 'turnoNoche' : 'turnoDia';
 }
 
 /**
- * @param {string} turno - dia | noche
+ * @param {string} turno - 'dia' | 'noche'
  * @param {import('../models/LocalModel').LocalModel} horarioLocal - horario del local asignado
  */
 function estaDentroDelTurno(turno, horarioLocal) {
@@ -27,18 +33,22 @@ function estaDentroDelTurno(turno, horarioLocal) {
   const inicio = turnoModel.inicioEnMinutos();
   const fin = turnoModel.finEnMinutos();
 
+  // Si el turno cruza medianoche (ej. 16:00 -> 00:00), está dentro si es
+  // después de la hora de inicio O antes de la hora de fin (día siguiente).
   if (turnoModel.cruzaMedianoche()) {
     return minutosActuales >= inicio || minutosActuales < fin;
   }
   return minutosActuales >= inicio && minutosActuales < fin;
 }
 
-/** Un admin/administrador nunca tiene restricción de turno. */
+/** Un admin/administrador nunca queda sujeto a la restricción de turno. */
 function esAdministrador(datos) {
   return datos?.rol === 'admin' || datos?.rol === 'administrador';
 }
 
 /**
+ * Convierte el objeto `localAsignado` ({ cafeteria: true, almacen: false, ... })
+ * en la lista de nombres de locales que están en `true`.
  * @param {object} localAsignado
  * @returns {string[]}
  */
@@ -51,7 +61,7 @@ export function localesAsignados(localAsignado) {
 
 /**
  * Minutos restantes hasta que termine el turno actual del empleado.
- * @param {string} turno - dia | noche
+ * @param {string} turno - 'dia' | 'noche'
  * @param {import('../models/LocalModel').LocalModel} horarioLocal - horario del local asignado
  * @returns {number|null} minutos restantes, o null si no hay restricción horaria
  */
@@ -67,6 +77,8 @@ export function minutosHastaFinTurno(turno, horarioLocal) {
   const minActual = ahora.getHours() * 60 + ahora.getMinutes();
 
   if (turnoModel.cruzaMedianoche()) {
+    // El fin cae al día siguiente: si aún no pasamos medianoche, sumamos lo
+    // que falta para llegar a las 24:00 más los minutos hasta `fin`.
     if (minActual >= inicio) {
       return (24 * 60 - minActual) + fin;
     }
@@ -76,13 +88,23 @@ export function minutosHastaFinTurno(turno, horarioLocal) {
   return minActual < fin ? fin - minActual : 0;
 }
 
+// ─── Provider ─────────────────────────────────────────────────────────────────
+
+// ─── Helper: primer local asignado al usuario ─────────────────────────────────
+
 function getLocalInicial(datosUsuario) {
   const locales = localesAsignados(datosUsuario?.localAsignado);
   return locales.length > 0 ? locales[0] : 'comida';
 }
 
-// Ademas de considerar el onDisconnect en caso de crashear o quedar sin internet, aseguramos que el al perder conexion en 90s o cerrar la pagina cambie a desconctado
-const UMBRAL_PRESENCIA_MS = 90 * 1000; // 90s
+// ── Presencia por heartbeat (sin onDisconnect) ────────────────────────────────
+// Firestore no tiene equivalente a onDisconnect()/.info/connected de RTDB, así
+// que "en línea" ya no se apoya en una señal del servidor al desconectarse:
+// se apoya SOLO en que ultimaConexion se siga refrescando (cada 30s, ver más
+// abajo). Si el refresco se detiene (wifi cortado, pestaña cerrada, crash),
+// dentro de UMBRAL_PRESENCIA_MS este helper empieza a devolver false, aunque
+// sesionActiva siga en true hasta el próximo login/logout explícito.
+const UMBRAL_PRESENCIA_MS = 90 * 1000; // 90s de margen sobre el intervalo de 30s
 
 export function estaRealmenteEnLinea(usuario) {
   if (!usuario?.sesionActiva || !usuario?.ultimaConexion) return false;
@@ -105,15 +127,13 @@ export function AuthProvider({ children }) {
     advertenciaRef.current = null;
   }
 
-  // Autenticacion
+  // ── Auth listener ──────────────────────────────────────────────────────────
 
   useEffect(() => {
     let unsubDB = null;
-    let unsubPresencia = null;
 
     const unsubAuth = onAuthStateChanged(auth, async (firebaseUser) => {
       if (unsubDB) { unsubDB(); unsubDB = null; }
-      if (unsubPresencia) { unsubPresencia(); unsubPresencia = null; }
       limpiarTimers();
 
       if (!firebaseUser) {
@@ -122,10 +142,11 @@ export function AuthProvider({ children }) {
         return;
       }
 
-      const snap = await get(ref(rtdb, `usuarios/${firebaseUser.uid}`));
+      const usuarioRef = doc(db, NODO, firebaseUser.uid);
+      const snap = await getDoc(usuarioRef);
 
       if (snap.exists()) {
-        const datos = snap.val();
+        const datos = snap.data();
 
         if (datos.restriccionHorario && !esAdministrador(datos)) {
           const nombreLocal = localesAsignados(datos.localAsignado)[0] ?? LOCAL_POR_DEFECTO;
@@ -135,25 +156,14 @@ export function AuthProvider({ children }) {
             return;
           }
         }
-        // `.info/connected` refleja el estado real en la BD onDisconnect() se registra en el SERVIDOR de Firebase: si el cliente pierde, crashea, cierra la pestaña cambia sesionActiva a false y ultimaConexion deja de actualizarse 
-        const sesionActivaRef   = ref(rtdb, `usuarios/${firebaseUser.uid}/sesionActiva`);
-        const ultimaConexionRef = ref(rtdb, `usuarios/${firebaseUser.uid}/ultimaConexion`);
-        const connectedRef      = ref(rtdb, '.info/connected');
 
-        unsubPresencia = onValue(connectedRef, (snapConectado) => {
-          if (snapConectado.val() === false) return;
+        // Marca inicial de presencia; el refresco periódico lo hace el
+        // segundo useEffect de más abajo (cada 30s).
+        actualizarPresencia();
 
-          onDisconnect(sesionActivaRef).set(false);
-          onDisconnect(ultimaConexionRef).set(new Date().toISOString());
-
-          set(sesionActivaRef, true);
-          set(ultimaConexionRef, new Date().toISOString());
-        });
-
-        const empleadoRef = ref(rtdb, `usuarios/${firebaseUser.uid}`);
-        unsubDB = onValue(empleadoRef, async (snapRT) => {
+        unsubDB = onSnapshot(usuarioRef, async (snapRT) => {
           if (snapRT.exists()) {
-            const datos = snapRT.val();
+            const datos = snapRT.data();
             const esAdmin = esAdministrador(datos);
 
             let horarioLocal = null;
@@ -177,35 +187,30 @@ export function AuthProvider({ children }) {
               if (locales.length > 0 && !locales.includes(prev)) {
                 return locales[0];
               }
-              return locales.length > 0 ? prev : 'comidaRapida';
+              return locales.length > 0 ? prev : 'comida';
             });
           }
           setCargando(false);
         });
 
       } else {
-        const adminRef = ref(rtdb, `usuarios/${firebaseUser.uid}`);
-        off(adminRef);
-        onValue(adminRef, (snapAdmin) => {
-          setUsuario({
-            uid:   firebaseUser.uid,
-            email: firebaseUser.email,
-            ...(snapAdmin.exists() ? snapAdmin.val() : { rol: null }),
-          });
-          setCargando(false);
-        }, { onlyOnce: true });
+        setUsuario({
+          uid:   firebaseUser.uid,
+          email: firebaseUser.email,
+          rol:   null,
+        });
+        setCargando(false);
       }
     });
 
     return () => {
       unsubAuth();
       if (unsubDB) unsubDB();
-      if (unsubPresencia) unsubPresencia();
       limpiarTimers();
     };
   }, []);
 
-  // Presencia periódica 
+  // ── Presencia periódica ────────────────────────────────────────────────────
 
   useEffect(() => {
     if (!usuario) return;
@@ -214,7 +219,7 @@ export function AuthProvider({ children }) {
     return () => clearInterval(intervalo);
   }, [usuario?.uid]);
 
-  // Cierre automático al fin de turno 
+  // ── Cierre automático al fin de turno ─────────────────────────────────────
 
   useEffect(() => {
     limpiarTimers();
@@ -230,7 +235,7 @@ export function AuthProvider({ children }) {
     const msRestantes    = minsRestantes * 60 * 1000;
     const MS_ADVERTENCIA = 15 * 60 * 1000;
 
-    // Mostrar SessionWarningBanner como recordatorio
+    // Programar aviso visual (lo maneja SessionWarningBanner por su cuenta)
     if (msRestantes > MS_ADVERTENCIA) {
       advertenciaRef.current = setTimeout(() => {}, msRestantes - MS_ADVERTENCIA);
     }
@@ -243,7 +248,8 @@ export function AuthProvider({ children }) {
     return () => limpiarTimers();
   }, [usuario?.uid, usuario?.restriccionHorario, usuario?.turno, usuario?.esAdmin, usuario?.horarioLocal]);
 
-  // Valor del contexto
+  // ── Valor del contexto ────────────────────────────────────────────────────
+
   return (
     <AuthContext.Provider value={{ usuario, cargando, localActivo, setLocalActivo }}>
       {children}
