@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   FiMenu, FiBox, FiBookOpen, FiTruck, FiShoppingBag, FiArrowRight,
   FiPackage, FiCheckCircle, FiUser, FiLock, FiUsers, FiUserPlus, FiFileText, FiLogOut,
+  FiPlusCircle,
 } from 'react-icons/fi';
 
-import { useAuth, localesAsignados } from '../../control/AuthContext';
-import { logoutEmpleado } from '../../control/AuthControl';
+import { useAuth, localesAsignados } from '../../controllers/AuthContext';
+import { logoutEmpleado } from '../../controllers/AuthControl';
 import { useTheme } from '../../context/ThemeContext';
-import SessionWarningBanner from '../../control/SessionWarningBanner';
+import SessionWarningBanner from '../../controllers/SessionWarningBanner';
 import PersonalScreen from '../PersonalScreen';
+import GestionProductosModal from './GestionProductosModal';
+import GestionRecetasModal from './GestionRecetasModal';
 
 import { Badge, LocalChip, ToggleSwitch } from './InventarioShared';
 import {
@@ -32,7 +34,6 @@ import { LOCAL_ICON_COMPONENTS } from './localIcons';
 import '../../css/MobileLayout.css';
 
 export default function MobileLayout({ state, actions }) {
-  const navigate = useNavigate();
   const { usuario } = useAuth();
   const { colors, isDark, toggle } = useTheme();
 
@@ -46,6 +47,10 @@ export default function MobileLayout({ state, actions }) {
   const [proveedoresGlobalVisible, setProveedoresGlobalVisible] = useState(false);
   // Local que disparó el modal de nuevo proveedor o reporte desde el drawer
   const [localDelModal,   setLocalDelModal]   = useState(null);
+  // Modal de gestión de productos: { local, autoAbrirRegistro } o null si está cerrado
+  const [modalProductosGestion, setModalProductosGestion] = useState(null);
+  // Modal de gestión de recetas: { local } o null si está cerrado
+  const [modalRecetasGestion,   setModalRecetasGestion]   = useState(null);
 
   const {
     activeLocal, modo, activeTab, proveedores, modalStock, modalVenc, modalProv, modalNuevoProv,
@@ -151,6 +156,17 @@ export default function MobileLayout({ state, actions }) {
             <button type="button" className="ml-drawer-btn">
               <FiUser size={15} />
               <span>Mi perfil</span>
+            </button>
+            <button
+              type="button"
+              className="ml-drawer-btn"
+              onClick={() => {
+                setDrawerOpen(false);
+                setModalProductosGestion({ local: activeLocal, autoAbrirRegistro: true });
+              }}
+            >
+              <FiPlusCircle size={15} />
+              <span>Registrar producto</span>
             </button>
             <button type="button" className="ml-drawer-btn">
               <FiLock size={15} />
@@ -338,7 +354,11 @@ export default function MobileLayout({ state, actions }) {
                   <p className="ml-nav-title">Gestión de Inventario</p>
                   <p className="ml-nav-desc">Administrar productos de {LOCAL_LABELS[activeLocal]}</p>
                 </div>
-                <button type="button" className="ml-nav-btn" onClick={() => navigate('/gestion-productos')}>
+                <button
+                  type="button"
+                  className="ml-nav-btn"
+                  onClick={() => setModalProductosGestion({ local: activeLocal, autoAbrirRegistro: false })}
+                >
                   Ir <FiArrowRight size={12} />
                 </button>
               </div>
@@ -392,7 +412,11 @@ export default function MobileLayout({ state, actions }) {
                   <p className="ml-nav-title">Gestión de Recetas</p>
                   <p className="ml-nav-desc">Administrar recetas e insumos</p>
                 </div>
-                <button type="button" className="ml-nav-btn" onClick={() => navigate('/gestion-recetas')}>
+                <button
+                  type="button"
+                  className="ml-nav-btn"
+                  onClick={() => setModalRecetasGestion({ local: activeLocal })}
+                >
                   Ir <FiArrowRight size={12} />
                 </button>
               </div>
@@ -606,6 +630,23 @@ export default function MobileLayout({ state, actions }) {
         }}
         provHoy={provHoy}
       />
+
+      {modalProductosGestion && (
+        <GestionProductosModal
+          onClose={() => setModalProductosGestion(null)}
+          local={modalProductosGestion.local}
+          localLabel={LOCAL_LABELS[modalProductosGestion.local]}
+          autoAbrirRegistro={modalProductosGestion.autoAbrirRegistro}
+        />
+      )}
+
+      {modalRecetasGestion && (
+        <GestionRecetasModal
+          onClose={() => setModalRecetasGestion(null)}
+          local={modalRecetasGestion.local}
+          localLabel={LOCAL_LABELS[modalRecetasGestion.local]}
+        />
+      )}
     </div>
   );
 }

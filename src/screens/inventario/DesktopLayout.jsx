@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   FiChevronUp, FiChevronDown, FiBox, FiBookOpen, FiTruck, FiFileText,
-  FiUser, FiUsers, FiUserPlus, FiLogOut, FiAlertTriangle, FiClock,
+  FiUser, FiUsers, FiUserPlus, FiLogOut, FiAlertTriangle, FiClock, FiPlusCircle,
 } from 'react-icons/fi';
 
-import { useAuth, localesAsignados } from '../../control/AuthContext';
-import { logoutEmpleado } from '../../control/AuthControl';
+import { useAuth, localesAsignados } from '../../controllers/AuthContext';
+import { logoutEmpleado } from '../../controllers/AuthControl';
 import { useTheme } from '../../context/ThemeContext';
-import SessionWarningBanner from '../../control/SessionWarningBanner';
+import SessionWarningBanner from '../../controllers/SessionWarningBanner';
 import PersonalScreen from '../PersonalScreen';
 import { ModalGestionProveedores } from './DetalleModals';
+import GestionProductosModal from './GestionProductosModal';
+import GestionRecetasModal from './GestionRecetasModal';
 
 import { ToggleSwitch, ModoToggleDesktop } from './InventarioShared';
 import { FloatingReporte } from './FloatingSheet';
@@ -23,13 +24,16 @@ import { LOCAL_ICON_COMPONENTS } from './localIcons';
 import '../../css/DesktopLayout.css';
 
 export default function DesktopLayout({ state, actions }) {
-  const navigate = useNavigate();
   const { usuario } = useAuth();
   const { colors, isDark, toggle } = useTheme();
 
   const [personalVisible, setPersonalVisible] = useState(false);
   const [reporteModal,    setReporteModal]    = useState(false);
   const [proveedoresGlobalVisible, setProveedoresGlobalVisible] = useState(false);
+  // Modal de gestión de productos: { local, autoAbrirRegistro } o null si está cerrado
+  const [modalProductosGestion, setModalProductosGestion] = useState(null);
+  // Modal de gestión de recetas: { local } o null si está cerrado
+  const [modalRecetasGestion,   setModalRecetasGestion]   = useState(null);
 
   const {
     activeLocal, modo, proveedores, modalStock, modalVenc, modalProv, modalNuevoProv,
@@ -172,9 +176,11 @@ export default function DesktopLayout({ state, actions }) {
                             type="button"
                             key={sub.id}
                             onClick={() => {
-                              if (sub.id === 'inventario')      navigate('/gestion-productos');
-                              else if (sub.id === 'recetas')    navigate('/gestion-recetas');
-                              else if (sub.id === 'proveedores') {
+                              if (sub.id === 'inventario') {
+                                setModalProductosGestion({ local, autoAbrirRegistro: false });
+                              } else if (sub.id === 'recetas') {
+                                setModalRecetasGestion({ local });
+                              } else if (sub.id === 'proveedores') {
                                 setLocalDelModal(local);
                                 setModalNuevoProv(true);
                               } else if (sub.id === 'reporte') {
@@ -203,6 +209,15 @@ export default function DesktopLayout({ state, actions }) {
           <button type="button" className="dl-sb-bottom-btn">
             <FiUser size={13} />
             <span>Mi perfil</span>
+          </button>
+
+          <button
+            type="button"
+            className="dl-sb-bottom-btn"
+            onClick={() => setModalProductosGestion({ local: activeLocal, autoAbrirRegistro: true })}
+          >
+            <FiPlusCircle size={13} />
+            <span>Registrar producto</span>
           </button>
 
           {!esCajero && (
@@ -307,6 +322,23 @@ export default function DesktopLayout({ state, actions }) {
         activeLocal={localDelModal}
         localLabels={LOCAL_LABELS}
       />
+
+      {modalProductosGestion && (
+        <GestionProductosModal
+          onClose={() => setModalProductosGestion(null)}
+          local={modalProductosGestion.local}
+          localLabel={LOCAL_LABELS[modalProductosGestion.local]}
+          autoAbrirRegistro={modalProductosGestion.autoAbrirRegistro}
+        />
+      )}
+
+      {modalRecetasGestion && (
+        <GestionRecetasModal
+          onClose={() => setModalRecetasGestion(null)}
+          local={modalRecetasGestion.local}
+          localLabel={LOCAL_LABELS[modalRecetasGestion.local]}
+        />
+      )}
     </div>
   );
 }
